@@ -1,0 +1,31 @@
+version: "3.8"
+services:
+  rabbitmq:
+    image: rabbitmq:3.12-management
+    container_name: 'rabbitmq'
+    ports:
+        - 5672:5672
+        - 15672:15672
+    volumes:
+        - ~/.docker-conf/rabbitmq/data/:/var/lib/rabbitmq/
+        - ~/.docker-conf/rabbitmq/log/:/var/log/rabbitmq
+    networks:
+        - padrao_net
+  apiaalise:
+    image: apianalise
+    build: 
+        context: ../src/ML.Analise.Produtos/ML.Analise.Produtos.API/
+        dockerfile: Dockerfile
+    ports:
+        - 8080:80
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    networks:
+        - padrao_net
+    restart: on-failure
+    depends_on:
+      - rabbitmq
+
+networks:
+  padrao_net:
+    driver: bridge

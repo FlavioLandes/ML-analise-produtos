@@ -11,6 +11,7 @@ services:
         - ~/.docker-conf/rabbitmq/log/:/var/log/rabbitmq
     networks:
         - padrao_net
+
   apiaalise:
     image: apianalise
     build: 
@@ -26,6 +27,48 @@ services:
     restart: on-failure
     depends_on:
       - rabbitmq
+
+  workeranalise1:
+    image: workeranalise1
+    build: 
+        context: ../src/ML.Analise.Produtos/ML.Analise.Produtos.Worker/
+        dockerfile: Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - RABBITMQ_HOST=rabbitmq
+    networks:
+        - padrao_net
+    restart: on-failure
+    depends_on:
+      - rabbitmq  
+  
+  workeranalise2:
+    image: workeranalise2
+    build: 
+        context: ../src/ML.Analise.Produtos/ML.Analise.Produtos.Worker/
+        dockerfile: Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - RABBITMQ_HOST=rabbitmq
+    networks:
+        - padrao_net
+    restart: on-failure
+    depends_on:
+      - rabbitmq  
+
+  workeranalise3:
+    image: workeranalise3
+    build: 
+        context: ../src/ML.Analise.Produtos/ML.Analise.Produtos.Worker/
+        dockerfile: Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - RABBITMQ_HOST=rabbitmq
+    networks:
+        - padrao_net
+    restart: on-failure
+    depends_on:
+      - rabbitmq  
 
 networks:
   padrao_net:

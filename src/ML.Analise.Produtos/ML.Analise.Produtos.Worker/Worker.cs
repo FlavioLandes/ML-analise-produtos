@@ -25,9 +25,10 @@ namespace ML.Analise.Produtos.Worker
             _logger = logger;
             _mercadoLivreService = mercadoLivreService;
 
+            string rabbitMqHost = Environment.GetEnvironmentVariable("RABBITMQ_HOST") ?? "localhost";
             var factory = new ConnectionFactory
             {
-                Uri = new Uri("amqp://guest:guest@localhost:5672"),
+                Uri = new Uri($"amqp://guest:guest@{rabbitMqHost}:5672"),
                 DispatchConsumersAsync = true
             };
 

@@ -17,9 +17,10 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+string rabbitMqHost = Environment.GetEnvironmentVariable("RABBITMQ_HOST") ?? "localhost"; 
 var factory = new ConnectionFactory
 {
-    Uri = new Uri("amqp://guest:guest@localhost:5672")
+    Uri = new Uri($"amqp://guest:guest@{rabbitMqHost}:5672")
 };
 
 IConnection conn = factory.CreateConnection();
@@ -42,8 +43,13 @@ app.MapPost("produtos/analise", (IList<string> nomesProdutos) =>
         props.ContentType = "application/json";
         props.DeliveryMode = 2;//2 = persistente
 
-        byte[] messageBodyBytes = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(nomesProdutos));
-        channel.BasicPublish(ExchangeName, RoutingKey, props, messageBodyBytes);
+        var chunkList = nomesProdutos.Chunk(size: 20).ToList();
+        
+        Parallel.ForEach(chunkList, (chunk) =>
+        {
+            byte[] messageBodyBytes = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(chunk));
+            channel.BasicPublish(ExchangeName, RoutingKey, props, messageBodyBytes);
+        });
 
         return Results.Ok();
     }

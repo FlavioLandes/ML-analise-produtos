@@ -7,7 +7,7 @@ Projeto feito para fins de estudo sobre arquiteturas assíncronas utilizando con
 Para tal, foram desenvolvidas as seguintes peças: 
 - Configuração do RabbitMQ para servir como mensageria;
 - Uma API REST em C# com .NET 6 para servir como porta de entrada para a lista de produtos a serem analisados, agrupar as mensagens em chunks e então enviar para uma fila no RabbitMQ;
-- Um modelo de worker em C# com .NET 6 para ler os chunks de mensagens, efetuar as análises no Mercado Livre e gravar os resultados em uma fila no RabbitMQ.
+- Um modelo de worker em C# com .NET 6 para ler os chunks de mensagens, efetuar as análises no Mercado Livre via API e gravar os resultados em uma fila no RabbitMQ.
 - Docker e Docker Compose para configuração e execução das peças acima mencionadas.
 
 ## Passos para executar o projeto:

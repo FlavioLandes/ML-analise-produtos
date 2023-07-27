@@ -23,3 +23,5 @@ Para tal, foram desenvolvidas as seguintes peças:
 5 - Então acessando http://localhost:15672 poderá ver o fluxo de mensagens ocorrendo nas filas.
 
 6 - Por fim, para encerrar basta no terminal executar <b><i>ctrl + c</i></b> e <b><i>docker compose down</i></b>.
+
+![alt text](desenho_arquitetura.png)

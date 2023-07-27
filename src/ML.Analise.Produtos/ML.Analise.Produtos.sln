@@ -5,7 +5,9 @@ VisualStudioVersion = 17.6.33829.357
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ML.Analise.Produtos.API", "ML.Analise.Produtos.API\ML.Analise.Produtos.API.csproj", "{10C60402-8C83-41FD-9F54-C73EEB809FA9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ML.Analise.Produtos.Worker", "ML.Analise.Produtos.Worker\ML.Analise.Produtos.Worker.csproj", "{DF3A85CE-7DBC-4145-A0DD-5E9679FC4973}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ML.Analise.Produtos.Worker", "ML.Analise.Produtos.Worker\ML.Analise.Produtos.Worker.csproj", "{DF3A85CE-7DBC-4145-A0DD-5E9679FC4973}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ML.Analise.Produtos.Tests", "ML.Analise.Produtos.Tests\ML.Analise.Produtos.Tests.csproj", "{9AFAC671-9616-4961-877F-347C0FAE6671}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{DF3A85CE-7DBC-4145-A0DD-5E9679FC4973}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DF3A85CE-7DBC-4145-A0DD-5E9679FC4973}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DF3A85CE-7DBC-4145-A0DD-5E9679FC4973}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9AFAC671-9616-4961-877F-347C0FAE6671}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9AFAC671-9616-4961-877F-347C0FAE6671}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9AFAC671-9616-4961-877F-347C0FAE6671}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9AFAC671-9616-4961-877F-347C0FAE6671}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

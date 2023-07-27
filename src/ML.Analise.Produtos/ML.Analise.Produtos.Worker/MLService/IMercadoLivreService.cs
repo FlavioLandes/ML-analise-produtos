@@ -2,6 +2,6 @@
 {
     public interface IMercadoLivreService
     {
-        Task<MercadoLivreResultado> VerificarProdutoAsync(string nome);
+        Task<MercadoLivreResultado> AnalyzeProductsAsync(string productName);
     }
 }

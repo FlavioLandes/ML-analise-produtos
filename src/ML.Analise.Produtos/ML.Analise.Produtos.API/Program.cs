@@ -34,6 +34,7 @@ const string RoutingKey = "solicitacao";
 channel.ExchangeDeclare(ExchangeName, ExchangeType.Topic, durable: true);
 channel.QueueDeclare(QueueName, durable: true, false, false, new Dictionary<string, object> { { "x-queue-type", "classic" } });
 channel.QueueBind(QueueName, ExchangeName, RoutingKey, null);
+channel.ConfirmSelect();
 
 app.MapPost("produtos/analise", (IList<string> nomesProdutos) =>
 {
@@ -49,6 +50,7 @@ app.MapPost("produtos/analise", (IList<string> nomesProdutos) =>
         {
             byte[] messageBodyBytes = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(chunk));
             channel.BasicPublish(ExchangeName, RoutingKey, props, messageBodyBytes);
+            channel.WaitForConfirmsOrDie(TimeSpan.FromSeconds(5));
         });
 
         return Results.Ok();

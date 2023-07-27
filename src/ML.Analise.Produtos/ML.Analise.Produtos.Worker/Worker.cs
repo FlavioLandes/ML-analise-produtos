@@ -17,7 +17,6 @@ namespace ML.Analise.Produtos.Worker
         private readonly ILogger<Worker> _logger;
         private readonly IModel _channelInput;
         private readonly IModel _channelOutput;
-
         private readonly IMercadoLivreService _mercadoLivreService;
 
         public Worker(ILogger<Worker> logger, IMercadoLivreService mercadoLivreService)
@@ -41,6 +40,7 @@ namespace ML.Analise.Produtos.Worker
             _channelOutput.ExchangeDeclare(ExchangeName, ExchangeType.Topic, durable: true);
             _channelOutput.QueueDeclare(QueueNameResult, durable: true, false, false, new Dictionary<string, object> { { "x-queue-type", "classic" } });
             _channelOutput.QueueBind(QueueNameResult, ExchangeName, RoutingKeyOutput, null);
+            _channelOutput.ConfirmSelect();
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -56,34 +56,17 @@ namespace ML.Analise.Produtos.Worker
 
                 try
                 {
-                    var produtos = JsonSerializer.Deserialize<List<string>>(bodyString);
+                    var products = JsonSerializer.Deserialize<List<string>>(bodyString);
+                    var analyzeResults = await AnalyzeProductsInMLAsync(products);
 
-                    var tasks = new List<Task<MercadoLivreResultado>>();
-                    foreach (var produto in produtos)
-                    {
-                        tasks.Add(_mercadoLivreService.VerificarProdutoAsync(produto));
-                    }
-
-                    MercadoLivreResultado[] resultadosVerificao = await Task.WhenAll(tasks);
-
-                    IBasicProperties props = _channelOutput.CreateBasicProperties();
-                    props.ContentType = "application/json";
-                    props.DeliveryMode = 2;//2 = persistente
-
-                    var options = new JsonSerializerOptions();
-                    options.Converters.Add(new JsonStringEnumConverter());
-                    string resultadosVerificacaoJson = JsonSerializer.Serialize(resultadosVerificao, options);
-                    _logger.LogInformation("Resultados verificao json: {resultadosVerificacaoJson}", resultadosVerificacaoJson);
-
-                    byte[] messageBodyBytes = Encoding.UTF8.GetBytes(resultadosVerificacaoJson);
-                    _channelOutput.BasicPublish(ExchangeName, RoutingKeyOutput, props, messageBodyBytes);
+                    SendAnalizeResultsToQueue(analyzeResults);
 
                     _channelInput.BasicAck(ea.DeliveryTag, false);
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "erro ao processar mensagem: {mensagem}", bodyString);
-                    _channelInput.BasicNack(ea.DeliveryTag, false, false);
+                    _logger.LogError(ex, "Erro ao analisar mensagem: {mensagem}", bodyString);
+                    _channelInput.BasicNack(ea.DeliveryTag, false, requeue: true);
                 }
 
                 await Task.Yield();
@@ -98,6 +81,34 @@ namespace ML.Analise.Produtos.Worker
             _channelInput.Close();
             _channelOutput.Close();
             await base.StopAsync(cancellationToken);
+        }
+
+        private async Task<MercadoLivreResultado[]> AnalyzeProductsInMLAsync(List<string> products)
+        {
+            var tasks = new List<Task<MercadoLivreResultado>>();
+            foreach (var product in products)
+            {
+                tasks.Add(_mercadoLivreService.AnalyzeProductsAsync(product));
+            }
+
+            return await Task.WhenAll(tasks);
+        }
+
+        private void SendAnalizeResultsToQueue(MercadoLivreResultado[] analyzeResults)
+        {
+            var options = new JsonSerializerOptions();
+            options.Converters.Add(new JsonStringEnumConverter());
+
+            string analyzeResultsJson = JsonSerializer.Serialize(analyzeResults, options);
+            _logger.LogInformation("Resultados analise json: {analyzeResultsJson}", analyzeResultsJson);
+
+            IBasicProperties props = _channelOutput.CreateBasicProperties();
+            props.ContentType = "application/json";
+            props.DeliveryMode = 2;//2 = persistente
+
+            byte[] messageBodyBytes = Encoding.UTF8.GetBytes(analyzeResultsJson);
+            _channelOutput.BasicPublish(ExchangeName, RoutingKeyOutput, props, messageBodyBytes);
+            _channelOutput.WaitForConfirmsOrDie(TimeSpan.FromSeconds(5));
         }
     }
 }

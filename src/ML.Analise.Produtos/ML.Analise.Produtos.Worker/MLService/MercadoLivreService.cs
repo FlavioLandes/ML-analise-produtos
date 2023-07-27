@@ -1,17 +1,13 @@
-﻿using ML.Analise.Produtos.Worker.MLService.DTOs;
-using System.Net.Http.Json;
-
-namespace ML.Analise.Produtos.Worker.MLService
+﻿namespace ML.Analise.Produtos.Worker.MLService
 {
     public class MercadoLivreService : IMercadoLivreService
     {
-        private const string URL_ML_Search = "https://api.mercadolibre.com/sites/MLB/search?q=";
         private readonly ILogger<MercadoLivreService> _logger;
-        private readonly IHttpClientFactory _httpClientFactory;
+        private readonly IMercadoLivreApi _mercadoLivreApi;
 
-        public MercadoLivreService(IHttpClientFactory httpClientFactory, ILogger<MercadoLivreService> logger)
+        public MercadoLivreService(IMercadoLivreApi mercadoLivreApi, ILogger<MercadoLivreService> logger)
         {
-            _httpClientFactory = httpClientFactory;
+            _mercadoLivreApi = mercadoLivreApi;
             _logger = logger;
         }
 
@@ -19,9 +15,7 @@ namespace ML.Analise.Produtos.Worker.MLService
         {
             try
             {
-                var httpClient = _httpClientFactory.CreateClient();
-
-                var responseML = await httpClient.GetFromJsonAsync<MercadoLivreResponseDTO>(URL_ML_Search + productName);
+                var responseML = await _mercadoLivreApi.GetProductsByname(productName);
 
                 if (responseML.Paging.Total == 0)
                 {

@@ -1,6 +1,6 @@
 # ML-analise-produtos
 
-Projeto feito para fins de estudo sobre arquiteturas assíncronas utilizando conceitos de APIs, Workers e Mensageria.
+Projeto feito para fins de estudo sobre arquitetura distribuída e comunicação assíncrona utilizando conceitos de APIs, Workers e Mensageria.
 
 <b>Regra de negócio:</b> dada uma lista de produtos é necessário verificar quais desses produtos são vendidos no Mercado Livre e gerar um relatório para tomada de decisão sobre possíveis produtos sendo "pirateados". O relatório final deve conter o status da análise de cada produto.
 
